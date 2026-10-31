@@ -1,0 +1,31 @@
+# Example production compose file (Traefik on an external "proxy" network).
+services:
+  elko-feedback:
+    build: .
+    image: elko-feedback:latest
+    container_name: elko-feedback
+    restart: unless-stopped
+    environment:
+      ELKO_FEEDBACK_DB: /data/feedback.db
+      ELKO_FEEDBACK_ADDR: ":8080"
+      ELKO_FEEDBACK_TRUST_PROXY: "1"
+      ELKO_FEEDBACK_SECURE_COOKIE: "1"
+    volumes:
+      - ./data:/data
+    networks: [proxy]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.elko-feedback.rule=Host(`feedback.elko.ai`)
+      - traefik.http.routers.elko-feedback.entrypoints=websecure
+      - traefik.http.routers.elko-feedback.tls=true
+      - traefik.http.services.elko-feedback.loadbalancer.server.port=8080
+    healthcheck:
+      test: ["CMD", "/elko-feedback", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  proxy:
+    external: true

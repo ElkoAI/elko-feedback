@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elko Feedback · Admin</title><link rel="stylesheet" href="/admin/static/admin.css"></head>
+<body>
+<section id="login" class="login hidden">
+  <form id="loginForm" class="card">
+    <h1><span class="dot"></span> Elko Feedback</h1>
+    <label>Username <input name="username" autocomplete="username" required></label>
+    <label>Password
+      <span class="pw"><input name="password" type="password" autocomplete="current-password" required>
+      <button type="button" class="eye" aria-label="Show password" title="Show / hide password">👁</button></span></label>
+    <div id="loginErr" class="err hidden"></div>
+    <button type="submit" class="primary">Sign in</button>
+  </form>
+</section>
+<section id="app" class="hidden">
+  <header><h1><span class="dot"></span> Elko Feedback</h1>
+    <nav><button data-tab="inbox" class="tab active">Inbox</button><button data-tab="channels" class="tab">Channels</button><button data-tab="keys" class="tab">API keys</button><button data-tab="settings" class="tab">Settings</button></nav>
+    <span class="who" id="who"></span><button id="logout" class="ghost">Sign out</button></header>
+  <div class="layout">
+    <aside id="tree"></aside>
+    <main>
+      <div id="tab-inbox" class="tabpane">
+        <form id="filters" class="filters">
+          <input name="q" placeholder="Search message, email, notes…">
+          <input name="prefix" placeholder="channel prefix (elko.mcp)">
+          <select name="status"><option value="">any status</option><option>new</option><option>read</option><option>triaged</option><option>archived</option></select>
+          <select name="min_rating"><option value="">any rating</option><option value="1">★1+</option><option value="2">★2+</option><option value="3">★3+</option><option value="4">★4+</option><option value="5">★5</option></select>
+          <input name="tag" placeholder="tag">
+          <input name="since" type="date" title="since"><input name="until" type="date" title="until">
+          <button class="primary">Filter</button>
+          <a id="expCsv" class="ghost btn">CSV</a><a id="expJson" class="ghost btn">JSON</a>
+        </form>
+        <div id="count" class="muted"></div>
+        <table class="list"><thead><tr><th>When</th><th>Channel</th><th>★</th><th>Message</th><th>Status</th><th>Tags</th></tr></thead><tbody id="rows"></tbody></table>
+        <div class="pager"><button id="prev" class="ghost">‹ Prev</button><button id="next" class="ghost">Next ›</button></div>
+      </div>
+      <div id="tab-channels" class="tabpane hidden">
+        <div class="row"><h2>Channels</h2><button id="newCh" class="primary">New channel</button></div>
+        <table class="list"><thead><tr><th>Id</th><th>Title</th><th>Enabled</th><th>Rate/h</th><th>Origins</th><th>Form</th><th></th></tr></thead><tbody id="chRows"></tbody></table>
+        <form id="chForm" class="card hidden">
+          <h3 id="chFormTitle">Channel</h3>
+          <div class="grid">
+            <label>Id (dotted path) <input name="id" required pattern="[a-z0-9][a-z0-9_\-]*(\.[a-z0-9][a-z0-9_\-]*)*"></label>
+            <label>Title <input name="title" required></label>
+            <label class="wide">Description <input name="description"></label>
+            <label>Accent color <input name="accent_color" type="color"></label>
+            <label>Logo URL <input name="logo_url"></label>
+            <label>Rate per hour / IP <input name="rate_per_hour" type="number" min="0"></label>
+            <label>Max bytes <input name="max_bytes" type="number" min="100"></label>
+            <label class="wide">Allowed origins (comma separated, * = any) <input name="allowed_origins"></label>
+            <label>Turnstile site key <input name="turnstile_sitekey"></label>
+            <label>Turnstile secret <span class="pw"><input name="turnstile_secret" type="password" autocomplete="off"><button type="button" class="eye" aria-label="Show secret">👁</button></span></label>
+            <label class="wide">Thank-you message <input name="thanks_message"></label>
+            <label class="wide">Field schema (JSON) <textarea name="fields" rows="6"></textarea></label>
+            <label><input name="enabled" type="checkbox"> Enabled</label>
+          </div>
+          <div class="err hidden" id="chErr"></div>
+          <button class="primary">Save</button> <button type="button" id="chCancel" class="ghost">Cancel</button>
+        </form>
+      </div>
+      <div id="tab-keys" class="tabpane hidden">
+        <div class="row"><h2>API keys</h2><form id="keyForm"><input name="name" placeholder="key name (e.g. mcp-reader)" required> <button class="primary">Create</button></form></div>
+        <div id="newKey" class="notice hidden"></div>
+        <table class="list"><thead><tr><th>Name</th><th>Prefix</th><th>Created</th><th>Last used</th><th></th></tr></thead><tbody id="keyRows"></tbody></table>
+      </div>
+      <div id="tab-settings" class="tabpane hidden"><h2>Settings</h2><form id="setForm" class="card"><div id="setFields" class="grid"></div><button class="primary">Save</button> <span id="setMsg" class="muted"></span></form></div>
+    </main>
+    <aside id="detail" class="detail hidden"></aside>
+  </div>
+</section>
+<script src="/admin/static/admin.js"></script>
+</body></html>

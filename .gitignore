@@ -1,0 +1,8 @@
+/data/
+/elko-feedback
+*.db
+*.db-*
+.admin-pass
+.env
+.env.*
+/shots/

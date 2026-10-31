@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{.Ch.Title}} · Feedback</title>
+<style>
+:root{--accent:{{.Ch.AccentColor}}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1115;color:#e8e8ea;display:flex;justify-content:center;padding:32px 16px}
+.card{width:100%;max-width:560px;background:#171a21;border:1px solid #262a33;border-radius:16px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.head{display:flex;gap:14px;align-items:center;margin-bottom:6px}.head img{width:44px;height:44px;border-radius:10px}
+h1{margin:0;font-size:22px}.bar{height:4px;background:var(--accent);border-radius:4px;margin:14px 0 18px}
+p.desc{color:#a9adb8;margin:0 0 18px}label{display:block;font-weight:600;margin:14px 0 6px;font-size:14px}
+textarea,input[type=text],input[type=email],select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #333845;background:#0f1115;color:#e8e8ea;font:inherit}
+textarea{min-height:140px;resize:vertical}textarea:focus,input:focus,select:focus{outline:2px solid var(--accent);border-color:transparent}
+.stars{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px}.stars input{display:none}
+.stars label{font-size:30px;color:#3a3f4b;cursor:pointer;margin:0}.stars input:checked~label,.stars label:hover,.stars label:hover~label{color:var(--accent)}
+.hp{position:absolute;left:-9999px}.err{background:#3a1416;border:1px solid #7a2a2f;color:#ffb4b9;padding:10px 12px;border-radius:10px;margin-bottom:12px}
+button{margin-top:20px;width:100%;padding:13px;border:0;border-radius:999px;background:var(--accent);color:#111;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}.foot{color:#6c717d;font-size:12px;text-align:center;margin-top:16px}
+.opt{color:#6c717d;font-weight:400}
+</style>
+{{if .Ch.TurnstileSiteKey}}<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>{{end}}
+</head><body><main class="card">
+<div class="head">{{if .Ch.LogoURL}}<img src="{{.Ch.LogoURL}}" alt="">{{end}}<h1>{{.Ch.Title}}</h1></div>
+<div class="bar"></div>
+{{if .Ch.Description}}<p class="desc">{{.Ch.Description}}</p>{{end}}
+{{if .Error}}<div class="err" role="alert">{{.Error}}</div>{{end}}
+<form method="post" action="/f/{{.Ch.ID}}">
+<input type="hidden" name="referrer" value="{{.Referrer}}">
+{{if .AppVer}}<input type="hidden" name="app_version" value="{{.AppVer}}">{{end}}
+<div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+{{if .Ch.Fields.Rating}}<label>Rating <span class="opt">(optional)</span></label>
+<div class="stars">{{template "stars" .}}</div>{{end}}
+{{if .Ch.Fields.Category}}<label for="category">Category <span class="opt">(optional)</span></label>
+<select id="category" name="category"><option value="">—</option>{{$c := .Values.Get "category"}}{{range .Ch.Fields.Category}}<option{{if eq . $c}} selected{{end}}>{{.}}</option>{{end}}</select>{{end}}
+<label for="message">Your feedback</label>
+<textarea id="message" name="message" required{{if .Ch.Fields.MessageMax}} maxlength="{{.Ch.Fields.MessageMax}}"{{end}} placeholder="What's working, what's broken, what do you wish it did?">{{.Values.Get "message"}}</textarea>
+{{$vals := .Values}}{{range .Ch.Fields.Custom}}<label for="c_{{.Name}}">{{.Label}}{{if not .Required}} <span class="opt">(optional)</span>{{end}}</label>
+{{if eq .Type "textarea"}}<textarea id="c_{{.Name}}" name="custom.{{.Name}}"{{if .Required}} required{{end}}>{{$vals.Get (printf "custom.%s" .Name)}}</textarea>
+{{else if eq .Type "select"}}<select id="c_{{.Name}}" name="custom.{{.Name}}"{{if .Required}} required{{end}}><option value="">—</option>{{range .Options}}<option>{{.}}</option>{{end}}</select>
+{{else}}<input type="text" id="c_{{.Name}}" name="custom.{{.Name}}" value="{{$vals.Get (printf "custom.%s" .Name)}}"{{if .Required}} required{{end}}>{{end}}{{end}}
+{{if .Ch.Fields.AppVersion}}{{if not .AppVer}}<label for="app_version">App / version <span class="opt">(optional)</span></label><input type="text" id="app_version" name="app_version" value="{{.Values.Get "app_version"}}">{{end}}{{end}}
+{{if .Ch.Fields.Email}}<label for="email">Email <span class="opt">(optional — only if you'd like a reply)</span></label>
+<input type="email" id="email" name="email" value="{{.Values.Get "email"}}" autocomplete="email">{{end}}
+{{if .Ch.TurnstileSiteKey}}<div class="cf-turnstile" data-sitekey="{{.Ch.TurnstileSiteKey}}" style="margin-top:16px"></div>{{end}}
+<button type="submit">Send feedback</button>
+</form>
+<div class="foot">Elko Feedback · we store a one-way hash of your IP, never the IP itself.</div>
+</main></body></html>
+{{define "stars"}}{{$v := .Values.Get "rating"}}{{range $i := revseq .MaxRating}}<input type="radio" id="r{{$i}}" name="rating" value="{{$i}}"{{if eq (printf "%d" $i) $v}} checked{{end}}><label for="r{{$i}}" title="{{$i}}">★</label>{{end}}{{end}}

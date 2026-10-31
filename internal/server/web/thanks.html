@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thank you · {{.Ch.Title}}</title>
+<style>body{margin:0;font:16px/1.5 system-ui,sans-serif;background:#0f1115;color:#e8e8ea;display:flex;justify-content:center;padding:64px 16px}
+.card{max-width:520px;width:100%;background:#171a21;border:1px solid #262a33;border-radius:16px;padding:36px;text-align:center}
+.ok{width:64px;height:64px;border-radius:50%;background:{{.Ch.AccentColor}};color:#111;font-size:36px;line-height:64px;margin:0 auto 16px;font-weight:700}
+a{color:{{.Ch.AccentColor}}}</style></head>
+<body><main class="card"><div class="ok">✓</div><h1>Thank you!</h1><p>{{.Thanks}}</p>
+<p><a href="/f/{{.Ch.ID}}">Send more feedback</a></p></main></body></html>
